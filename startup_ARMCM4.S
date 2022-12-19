@@ -1,9 +1,36 @@
-/* File: startup_ARMCM3.S
- * Purpose: startup file for Cortex-M3 devices. Should use with
+/* File: startup_ARMCM4.S
+ * Purpose: startup file for Cortex-M4 devices. Should use with
  *   GCC for ARM Embedded Processors
- * Version: V2.0
- * Date: 16 August 2013
+ * Version: V2.01
+ * Date: 12 June 2014
+ *
  */
+/* Copyright (c) 2011 - 2014 ARM LIMITED
+   All rights reserved.
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are met:
+   - Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+   - Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+   - Neither the name of ARM nor the names of its contributors may be used
+     to endorse or promote products derived from this software without
+     specific prior written permission.
+   *
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+   ARE DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS AND CONTRIBUTORS BE
+   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+   POSSIBILITY OF SUCH DAMAGE.
+   ---------------------------------------------------------------------------*/
+
 
 	.syntax	unified
 	.arch	armv7-m
@@ -13,7 +40,7 @@
 #ifdef __STACK_SIZE
 	.equ	Stack_Size, __STACK_SIZE
 #else
-	.equ	Stack_Size, 0xc00
+	.equ	Stack_Size, 0x00000400
 #endif
 	.globl	__StackTop
 	.globl	__StackLimit
@@ -28,7 +55,7 @@ __StackTop:
 #ifdef __HEAP_SIZE
 	.equ	Heap_Size, __HEAP_SIZE
 #else
-	.equ	Heap_Size, 0
+	.equ	Heap_Size, 0x00000C00
 #endif
 	.globl	__HeapBase
 	.globl	__HeapLimit
@@ -40,10 +67,10 @@ __HeapBase:
 __HeapLimit:
 	.size	__HeapLimit, . - __HeapLimit
 
-	.section .isr_vector
+	.section .vectors
 	.align	2
-	.globl	__isr_vector
-__isr_vector:
+	.globl	__Vectors
+__Vectors:
 	.long	__StackTop            /* Top of Stack */
 	.long	Reset_Handler         /* Reset Handler */
 	.long	NMI_Handler           /* NMI Handler */
@@ -62,9 +89,40 @@ __isr_vector:
 	.long	SysTick_Handler       /* SysTick Handler */
 
 	/* External interrupts */
-	.long	Default_Handler
+	.long	WDT_IRQHandler        /*  0:  Watchdog Timer            */
+	.long	RTC_IRQHandler        /*  1:  Real Time Clock           */
+	.long	TIM0_IRQHandler       /*  2:  Timer0 / Timer1           */
+	.long	TIM2_IRQHandler       /*  3:  Timer2 / Timer3           */
+	.long	MCIA_IRQHandler       /*  4:  MCIa                      */
+	.long	MCIB_IRQHandler       /*  5:  MCIb                      */
+	.long	UART0_IRQHandler      /*  6:  UART0 - DUT FPGA          */
+	.long	UART1_IRQHandler      /*  7:  UART1 - DUT FPGA          */
+	.long	UART2_IRQHandler      /*  8:  UART2 - DUT FPGA          */
+	.long	UART4_IRQHandler      /*  9:  UART4 - not connected     */
+	.long	AACI_IRQHandler       /* 10: AACI / AC97                */
+	.long	CLCD_IRQHandler       /* 11: CLCD Combined Interrupt    */
+	.long	ENET_IRQHandler       /* 12: Ethernet                   */
+	.long	USBDC_IRQHandler      /* 13: USB Device                 */
+	.long	USBHC_IRQHandler      /* 14: USB Host Controller        */
+	.long	CHLCD_IRQHandler      /* 15: Character LCD              */
+	.long	FLEXRAY_IRQHandler    /* 16: Flexray                    */
+	.long	CAN_IRQHandler        /* 17: CAN                        */
+	.long	LIN_IRQHandler        /* 18: LIN                        */
+	.long	I2C_IRQHandler        /* 19: I2C ADC/DAC                */
+	.long	0                     /* 20: Reserved                   */
+	.long	0                     /* 21: Reserved                   */
+	.long	0                     /* 22: Reserved                   */
+	.long	0                     /* 23: Reserved                   */
+	.long	0                     /* 24: Reserved                   */
+	.long	0                     /* 25: Reserved                   */
+	.long	0                     /* 26: Reserved                   */
+	.long	0                     /* 27: Reserved                   */
+	.long	CPU_CLCD_IRQHandler   /* 28: Reserved - CPU FPGA CLCD   */
+	.long	0                     /* 29: Reserved - CPU FPGA        */
+	.long	UART3_IRQHandler      /* 30: UART3    - CPU FPGA        */
+	.long	SPI_IRQHandler        /* 31: SPI Touchscreen - CPU FPGA */
 
-	.size	__isr_vector, . - __isr_vector
+	.size	__Vectors, . - __Vectors
 
 	.text
 	.thumb
@@ -190,6 +248,13 @@ Reset_Handler:
 	blt	.L_loop3
 #endif /* __STARTUP_CLEAR_BSS_MULTIPLE || __STARTUP_CLEAR_BSS */
 
+//#ifndef __NO_SYSTEM_INIT
+//	bl	SystemInit
+//#endif
+
+//#ifndef __START
+//#define __START _start
+//#endif
 	bl	main
 
 	.pool
@@ -220,6 +285,29 @@ Default_Handler:
 	def_irq_handler	DebugMon_Handler
 	def_irq_handler	PendSV_Handler
 	def_irq_handler	SysTick_Handler
-	def_irq_handler	DEF_IRQHandler
+
+	def_irq_handler	WDT_IRQHandler
+	def_irq_handler	RTC_IRQHandler
+	def_irq_handler	TIM0_IRQHandler
+	def_irq_handler	TIM2_IRQHandler
+	def_irq_handler	MCIA_IRQHandler
+	def_irq_handler	MCIB_IRQHandler
+	def_irq_handler	UART0_IRQHandler
+	def_irq_handler	UART1_IRQHandler
+	def_irq_handler	UART2_IRQHandler
+	def_irq_handler	UART3_IRQHandler
+	def_irq_handler	UART4_IRQHandler
+	def_irq_handler	AACI_IRQHandler
+	def_irq_handler	CLCD_IRQHandler
+	def_irq_handler	ENET_IRQHandler
+	def_irq_handler	USBDC_IRQHandler
+	def_irq_handler	USBHC_IRQHandler
+	def_irq_handler	CHLCD_IRQHandler
+	def_irq_handler	FLEXRAY_IRQHandler
+	def_irq_handler	CAN_IRQHandler
+	def_irq_handler	LIN_IRQHandler
+	def_irq_handler	I2C_IRQHandler
+	def_irq_handler	CPU_CLCD_IRQHandler
+	def_irq_handler	SPI_IRQHandler
 
 	.end

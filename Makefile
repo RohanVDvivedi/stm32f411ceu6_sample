@@ -6,7 +6,7 @@ OC:=arm-none-eabi-objcopy
 USE_NOHOST:=--specs=nosys.specs
 
 # specify the instruction set to use and the cpu (can not change this)
-ARCH_FLAGS:=-mthumb -mcpu=cortex-m3
+ARCH_FLAGS:=-mthumb -mcpu=cortex-m4
 # optimization for code size, use -O(0,1,2,3) for execution performance
 OPTIMIZATION:=-Os
 # the final compiler flags
@@ -43,11 +43,11 @@ OBJECTS:=$(patsubst %.c,%.o,${SOURCES})
 STARTUP_DEFS:=-D__STARTUP_CLEAR_BSS
 
 # generate explicitly the startup object elf for this controller and project
-startup_ARMCM3.o : startup_ARMCM3.S
+startup_ARMCM4.o : startup_ARMCM4.S
 	${CC} $(CCFLAGS) $(STARTUP_DEFS) $< -o $@
 
 # generate final elf by linking all the object files
-main.elf : startup_ARMCM3.o $(OBJECTS)
+main.elf : startup_ARMCM4.o $(OBJECTS)
 	$(LD) $(ARCH_FLAGS) $(LDFLAGS) $(USE_NOHOST) $^ -o $@ $(LIB)
 
 # convert to hex or binary that can be transfered by the corresponding uploader driver
