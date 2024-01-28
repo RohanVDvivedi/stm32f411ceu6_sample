@@ -9,8 +9,10 @@ USE_NOHOST:=--specs=nosys.specs
 ARCH_FLAGS:=-mthumb -mcpu=cortex-m4
 # optimization for code size, use -O(0,1,2,3) for execution performance
 OPTIMIZATION:=-Os
+# use hardware FPU
+HARD_FPU:=-mfloat-abi=hard
 # the final compiler flags
-CCFLAGS:=$(ARCH_FLAGS) ${OPTIMIZATION} -I. -fsingle-precision-constant -flto -ffunction-sections -fdata-sections
+CCFLAGS:=$(ARCH_FLAGS) ${HARD_FPU} ${OPTIMIZATION} -I. -fsingle-precision-constant -flto -ffunction-sections -fdata-sections
 # I am using only single precission floating point constants
 
 # add this option to LDFLAGS to build the map file along side the executable elf

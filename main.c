@@ -19,9 +19,14 @@ void main(void)
 
 	GPIOC->GPIO_MODER |= (1 << (13 * 2));
 	
+	float fraction = 2.5;
+
 	while(1)
 	{
 		GPIOC->GPIO_ODR ^= (1 << 13);
-		delay_for(300000);
+		delay_for(300000 * fraction);
+		fraction -= 0.1;
+		if(fraction <= 0.02)
+			fraction = 2.5;
 	}
 }
