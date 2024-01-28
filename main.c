@@ -18,6 +18,12 @@ void main(void)
 	RCC->RCC_AHB1ENR |= (1 << 2);
 
 	GPIOC->GPIO_MODER |= (1 << (13 * 2));
+
+	for(int i = 0; i < 6; i++)
+	{
+		GPIOC->GPIO_ODR ^= (1 << 13);
+		delay_for(400000);
+	}
 	
 	float fraction = 2.5;
 
