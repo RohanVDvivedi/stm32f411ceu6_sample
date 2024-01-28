@@ -25,7 +25,7 @@ void main(void)
 	{
 		GPIOC->GPIO_ODR ^= (1 << 13);
 		delay_for(300000 * fraction);
-		fraction -= 0.1;
+		fraction -= 0.05;
 		if(fraction <= 0.02)
 			fraction = 2.5;
 	}
