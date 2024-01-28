@@ -12,7 +12,7 @@ OPTIMIZATION:=-Os
 # use hardware FPU
 HARD_FPU:=-mfloat-abi=hard
 # the final compiler flags
-CCFLAGS:=$(ARCH_FLAGS) ${HARD_FPU} ${OPTIMIZATION} -I. -fsingle-precision-constant -flto -ffunction-sections -fdata-sections
+CCFLAGS:=$(ARCH_FLAGS) ${HARD_FPU} ${OPTIMIZATION} -I. -flto -ffunction-sections -fdata-sections #-fsingle-precision-constant
 # I am using only single precission floating point constants
 
 # add this option to LDFLAGS to build the map file along side the executable elf
@@ -20,9 +20,9 @@ MAP:=-Map=main.map
 # introduce the path to the linker script and the name of the linker script
 LDSCRIPTS:=-L. -T gcc.ld
 # remove unused function and data sections
-GC:=-Wl,--gc-sections
+GC:=#-Wl,--gc-sections
 #the final linker flags
-LDFLAGS:=$(LDSCRIPTS) $(GC)
+LDFLAGS:=$(LDSCRIPTS) $(GC) ${HARD_FPU}
 
 # libraries
 LIB:=-lm
