@@ -12,7 +12,7 @@ OPTIMIZATION:=-Os
 # use hardware FPU
 HARD_FPU:=-mfloat-abi=hard
 # the final compiler flags
-CCFLAGS:=$(ARCH_FLAGS) ${HARD_FPU} ${OPTIMIZATION} -I. -flto -ffunction-sections -fdata-sections #-fsingle-precision-constant
+CCFLAGS:=$(ARCH_FLAGS) ${HARD_FPU} ${OPTIMIZATION} -I. -fsingle-precision-constant -flto -ffunction-sections -fdata-sections
 # I am using only single precission floating point constants
 
 # add this option to LDFLAGS to build the map file along side the executable elf
