@@ -20,9 +20,9 @@ MAP:=-Map=main.map
 # introduce the path to the linker script and the name of the linker script
 LDSCRIPTS:=-L. -T gcc.ld
 # remove unused function and data sections
-GC:=#-Wl,--gc-sections
+GC:=-Wl,--gc-sections
 #the final linker flags
-LDFLAGS:=$(LDSCRIPTS) $(GC) ${HARD_FPU}
+LDFLAGS:=$(LDSCRIPTS) $(GC) $(HARD_FPU)
 
 # libraries
 LIB:=-lm
